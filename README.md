@@ -10,7 +10,7 @@ Python SDK for [ErrSight](https://errsight.com) error tracking. Capture exceptio
 
 ## Requirements
 
-Python ≥ 3.8.
+Python ≥ 3.8
 
 ## Installation
 
