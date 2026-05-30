@@ -1,0 +1,98 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "errsight"
+dynamic = ["version"]
+description = "Python SDK for ErrSight error tracking"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.8"
+authors = [{ name = "ErrSight", email = "support@errsight.com" }]
+keywords = ["errsight", "error-tracking", "logging", "observability"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Framework :: Django",
+  "Framework :: Flask",
+  "Framework :: FastAPI",
+  "Framework :: Celery",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Software Development :: Bug Tracking",
+  "Topic :: System :: Logging",
+  "Topic :: System :: Monitoring",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7",
+  "pytest-httpserver>=1.0",
+  "mypy>=1.5",
+  "build",
+  "twine",
+  "django>=4.2",
+  "flask>=2.3",
+  "starlette>=0.27",
+  "httpx>=0.24",
+  "celery>=5.3",
+  "rq>=1.15",
+  "fakeredis>=2.20",
+]
+django = ["django>=4.2"]
+flask = ["flask>=2.3"]
+starlette = ["starlette>=0.27"]
+fastapi = ["fastapi>=0.100"]
+celery = ["celery>=5.3"]
+rq = ["rq>=1.15"]
+
+[project.urls]
+Homepage      = "https://errsight.com"
+Source        = "https://github.com/errsight/errsight-python"
+Issues        = "https://github.com/errsight/errsight-python/issues"
+Changelog     = "https://github.com/errsight/errsight-python/blob/main/CHANGELOG.md"
+Documentation = "https://github.com/errsight/errsight-python#readme"
+
+[tool.hatch.version]
+path = "src/errsight/version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/errsight"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[[tool.mypy.overrides]]
+module = "django.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["flask.*", "flask_login.*", "werkzeug.*", "blinker.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["starlette.*", "fastapi.*", "httpx.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["celery.*", "kombu.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["rq.*", "fakeredis.*", "redis.*", "asgiref.*"]
+ignore_missing_imports = true
