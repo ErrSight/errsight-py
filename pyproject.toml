@@ -51,7 +51,11 @@ dev = [
   "httpx>=0.24",
   "celery>=5.3",
   "rq>=1.15",
-  "fakeredis>=2.20",
+  # fakeredis 2.36 uses runtime PEP 585 generics (``list[...]``) that don't
+  # evaluate on Python 3.8, breaking import/collection. Pin to the last
+  # 3.8-compatible release there; let 3.9+ track the latest.
+  "fakeredis>=2.20; python_version >= '3.9'",
+  "fakeredis>=2.20,<2.36; python_version < '3.9'",
 ]
 django = ["django>=4.2"]
 flask = ["flask>=2.3"]
