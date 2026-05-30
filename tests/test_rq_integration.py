@@ -157,7 +157,26 @@ def test_exc_handler_returns_true_to_chain_handlers():
 
 
 def _fake_redis_conn():
-    return fakeredis.FakeStrictRedis(server=fakeredis.FakeServer())
+    """A fakeredis connection whose ``client_list()`` reports an ``addr``.
+
+    Real Redis returns ``addr`` (``ip:port``) for every connected client,
+    but fakeredis omits it. RQ >= 2.9 reads ``client['addr']`` in
+    ``Worker._set_ip_address`` during ``__init__`` and only guards against
+    ``ResponseError`` — so the missing key raises ``KeyError`` and breaks
+    worker construction. Backfill the field so the worker boots the same
+    way it would against real Redis.
+    """
+    conn = fakeredis.FakeStrictRedis(server=fakeredis.FakeServer())
+    _orig_client_list = conn.client_list
+
+    def _client_list_with_addr(*args, **kwargs):
+        clients = _orig_client_list(*args, **kwargs)
+        for client in clients:
+            client.setdefault("addr", "127.0.0.1:6379")
+        return clients
+
+    conn.client_list = _client_list_with_addr  # type: ignore[method-assign]
+    return conn
 
 
 def _failing_task():
