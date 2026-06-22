@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
 
 jobs:
@@ -20,3 +21,44 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: pytest -q
       - run: mypy --strict src/errsight
+
+  publish:
+    # Build and upload to PyPI only when a v* tag is pushed, and only after
+    # the full test matrix is green. Authenticates with the PYPI_API_TOKEN
+    # secret stored on the `pypi` environment.
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/errsight
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify tag matches package version
+        run: |
+          pkg_version="$(grep -oE '[0-9]+\.[0-9]+\.[0-9]+' src/errsight/version.py)"
+          tag_version="${GITHUB_REF_NAME#v}"
+          echo "package=$pkg_version tag=$tag_version"
+          if [ "$pkg_version" != "$tag_version" ]; then
+            echo "::error::Tag $tag_version does not match __version__ $pkg_version" >&2
+            exit 1
+          fi
+
+      - name: Build sdist and wheel
+        run: |
+          python -m pip install --upgrade build
+          python -m build
+
+      - name: Check artifact metadata
+        run: |
+          python -m pip install --upgrade twine
+          twine check dist/*
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
