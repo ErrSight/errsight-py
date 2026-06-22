@@ -66,10 +66,10 @@ rq = ["rq>=1.15"]
 
 [project.urls]
 Homepage      = "https://errsight.com"
-Source        = "https://github.com/errsight/errsight-python"
-Issues        = "https://github.com/errsight/errsight-python/issues"
-Changelog     = "https://github.com/errsight/errsight-python/blob/main/CHANGELOG.md"
-Documentation = "https://github.com/errsight/errsight-python#readme"
+Source        = "https://github.com/ErrSight/errsight-py"
+Issues        = "https://github.com/ErrSight/errsight-py/issues"
+Changelog     = "https://github.com/ErrSight/errsight-py/blob/main/CHANGELOG.md"
+Documentation = "https://github.com/ErrSight/errsight-py#readme"
 
 [tool.hatch.version]
 path = "src/errsight/version.py"
